@@ -1,9 +1,9 @@
 
-# Udacity Self Driving Car Nano Degree - Behavior Cloning Project
+# Udacity Self Driving Car Nano Degree - Behavioral Cloning Project
 
 # 1. Data source
 
-It turnes out that collecting data on laptop was very difficult due to limitations of keyboard control. Steering angles were too sharp and rough. So I used sample data for track 1 from here https://d17h27t6h515a5.cloudfront.net/topher/2016/December/584f6edd_data/data.zip.
+It turned out that collecting data on laptop was very difficult due to limitations of keyboard control. Steering angles were too sharp and rough. So I used sample data for track 1 from here https://d17h27t6h515a5.cloudfront.net/topher/2016/December/584f6edd_data/data.zip.
 
 
 ```python
