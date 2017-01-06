@@ -73,8 +73,6 @@ Randomly flipped image, angle: -0.224515185415
 
 ## Preprocessing
 
-## Crop and resize
-
 I removed the 1/5 of the top and 25 px of the bottom of the image and resized it to 64x64px.
 
 ![png](output_35_2.png)
@@ -149,7 +147,7 @@ Blue - real angles. Green - predicted angles.
 
 ## Model performance
 
-###### The car was driving track 1 for an infinite amount of time and track 2 till the end of the road with throttle equal to 0.5
+The car was driving track 1 for an infinite amount of time and track 2 till the end of the road with throttle equal to 0.5
 
 Although the car was jittering some of the time, because we need to make just one sharp turn at the end of second track. I think the better solution will be to control the throttle. In this case it will be easy to avoid jittering and let the car drive smoothly on both tracks.
 
