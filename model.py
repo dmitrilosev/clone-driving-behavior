@@ -190,7 +190,7 @@ def comma_model(input_height, input_width):
 	model.add(Activation('linear'))
 	return model
 
-def train_model(model, data_frame_train, data_frame_val, epochs=6):
+def train_model(model, data_frame_train, data_frame_val, epochs=20):
 	"""
 	Training
 	"""
@@ -239,6 +239,6 @@ if __name__ == '__main__':
 	model.summary()
 	
 	# Train the model
-	train_model(model, data_frame_train, data_frame_val, epochs=6)
+	train_model(model, data_frame_train, data_frame_val, epochs=14)
 
 	exit(0)
