@@ -29,16 +29,22 @@ def _random_image_path_and_angle(data_frame, index):
 	Augmenting: random image path from center, left or right camera
 	"""
 	OFF_CENTER_IMG = .25
-	random_index = np.random.randint(3)
 	angle = data_frame.iloc[index].steering
-	if random_index == 0:
-		image_path = data_frame.iloc[index].left[1:]
-		angle += OFF_CENTER_IMG
-	elif random_index == 2:
-		image_path = data_frame.iloc[index].right[1:]
-		angle -= OFF_CENTER_IMG
+	random_index = np.random.randint(2)
+
+	if angle < 0:
+		if random_index == 0:
+			image_path = data_frame.iloc[index].right[1:]
+			angle -= OFF_CENTER_IMG
+		else:
+			image_path = data_frame.iloc[index].center
 	else:
-		image_path = data_frame.iloc[index].center
+		if random_index == 0:
+			image_path = data_frame.iloc[index].left[1:]
+			angle += OFF_CENTER_IMG
+		else:
+			image_path = data_frame.iloc[index].center
+			
 	return image_path, angle
 	
 def _random_angle_translate(angle):
@@ -170,26 +176,36 @@ def save_model_and_weights():
 	print("Model and weights saved")
 
 def comma_model(input_height, input_width):
+	
 	"""
-	Comma model with additional lambda, convolution and dropout layers 
+	Comma model with additional normalization and dropout layers 
 	"""
+	
 	input_shape = (input_height, input_width, 3)
+	
 	model = Sequential()
+	
+	# Normalization
 	model.add(Lambda(lambda x: x/255.-0.5,input_shape=input_shape))
-	model.add(Convolution2D(3, 1, 1, border_mode='same', name='block1_conv1', init='he_normal', activation='elu'))
-	model.add(Convolution2D(16, 8, 8, subsample=(4, 4), border_mode="same", input_shape=(input_height, input_width, 3)))
-	model.add(Activation('relu'))
-	model.add(Convolution2D(32, 5, 5, subsample=(2, 2), border_mode="same"))
-	model.add(Activation('relu'))
-	model.add(Convolution2D(64, 5, 5, subsample=(2, 2), border_mode="same"))
+	
+	# Block 1
+	model.add(Convolution2D(16, 8, 8, subsample=(4, 4), border_mode="same", name='block1_conv1', activation='relu'))
+	
+	# Block 2
+	model.add(Convolution2D(32, 5, 5, subsample=(2, 2), border_mode="same", name='block2_conv1', activation='relu'))
+	
+	# Block 3
+	model.add(Convolution2D(64, 5, 5, subsample=(2, 2), border_mode="same", name='block3_conv1'))
+	
+	# FC
 	model.add(Flatten())
 	model.add(Activation('relu'))
-	model.add(Dense(1024))
-	model.add(Activation('relu'))
-	model.add(Dense(1))
-	model.add(Activation('linear'))
-	return model
+	model.add(Dense(1024, name='fc1', init='he_normal', activation='relu'))
+	model.add(Dropout(0.5, name='fc1_dropout'))
+	model.add(Dense(1, name='output', init='he_normal', activation='linear'))
 
+	return model
+	
 def train_model(model, data_frame_train, data_frame_val, epochs=20):
 	"""
 	Training
@@ -198,6 +214,8 @@ def train_model(model, data_frame_train, data_frame_val, epochs=20):
 	end_epoch = epochs
 	batches_per_epoch = int(data_frame_train.shape[0]/batch_size)
 	model.compile(optimizer="adam", loss="mse")
+	
+# 	model.load_weights('model.h5')
 	
 	# Pre-train evaluation
 	val_gen = data_generator(data_frame_val, input_height, input_width, batch_size=batch_size)
@@ -239,6 +257,6 @@ if __name__ == '__main__':
 	model.summary()
 	
 	# Train the model
-	train_model(model, data_frame_train, data_frame_val, epochs=14)
+	train_model(model, data_frame_train, data_frame_val, epochs=15)
 
 	exit(0)
